@@ -10,18 +10,31 @@ import (
 	"github.com/golang/glog"
 )
 
+/**
+ * Url examples:
+ * 1. http://localhost:9000
+ * 2. http://localhost:9000/?user=james
+ * 3. http://localhost:9000/healthz
+ */
 func main() {
 	flag.Set("v", "4")
 	glog.V(2).Info("Starting http server")
 	http.HandleFunc("/", rootHandler)
+	http.HandleFunc("/healthz", healthz)
+
 	c, python, java := true, false, "no!"
 	fmt.Println(c, python, java)
+
+	// Listens on port 9000
 	err := http.ListenAndServe(":9000", nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
+/**
+ * Root url handler, namely "/"
+ */
 func rootHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("entering root handler")
 	user := r.URL.Query().Get("user")
@@ -36,6 +49,9 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+/**
+ * HealthZ handler, namely "/healthz"
+ */
 func healthz(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "ok\n")
 }
