@@ -19,14 +19,24 @@ import (
 func main() {
 	flag.Set("v", "4")
 	glog.V(2).Info("Starting http server")
-	http.HandleFunc("/", rootHandler)
-	http.HandleFunc("/healthz", healthz)
+
+	// http.HandleFunc("/", rootHandler)
+	// http.HandleFunc("/healthz", healthz)
+
+	// ServeMux is an HTTP request multiplexer. It matches the URL of each incoming request against a list of registered patterns
+	// and calls the handler for the pattern that most closely matches the URL.
+	// In electronics, a multiplexer (or mux; spelled sometimes as multiplexor), also known as a data selector,
+	// is a device that selects between several analog or digital input signals and forwards the selected input to a single output line.
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", rootHandler)
+	mux.HandleFunc("/healthz", healthz)
 
 	c, python, java := true, false, "no!"
 	fmt.Println(c, python, java)
 
 	// Listens on port 9000
-	err := http.ListenAndServe(":9000", nil)
+	// err := http.ListenAndServe(":9000", nil)
+	err := http.ListenAndServe(":9000", mux)
 	if err != nil {
 		log.Fatal(err)
 	}
