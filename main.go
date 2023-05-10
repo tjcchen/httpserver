@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/pprof"
+	"os"
 
 	"github.com/golang/glog"
 )
@@ -57,6 +58,7 @@ func main() {
  * Root url handler, namely "/"
  */
 func rootHandler(w http.ResponseWriter, r *http.Request) {
+	os.Setenv("GOVERSION", "go1.20.3")
 	fmt.Println("entering root handler")
 	user := r.URL.Query().Get("user")
 	if user != "" {
@@ -65,6 +67,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, "hello [stranger]\n")
 	}
 	io.WriteString(w, "===============Details of the http request header:===============\n")
+	io.WriteString(w, fmt.Sprintf("Go Version: [%s]\n", os.Getenv("GOVERSION")))
 	for k, v := range r.Header {
 		io.WriteString(w, fmt.Sprintf("%s=%s\n", k, v))
 	}
