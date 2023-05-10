@@ -19,5 +19,26 @@ make release
 make push
 ```
 
+## Tree
+```sh
+# tree display with level 3
+tree -L 3
+
+# directory hierarchy
+.
+├── Dockerfile
+├── LICENSE
+├── Makefile
+├── README.md
+├── bin
+│   └── amd64
+│       └── httpserver
+├── build.sh
+├── go.mod
+├── go.sum
+├── main.go
+└── test
+    └── pprof.go
+```
 ## License
 Apache 2.0
