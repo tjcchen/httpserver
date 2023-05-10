@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/http/pprof"
 
 	"github.com/golang/glog"
 )
@@ -15,6 +16,10 @@ import (
  * 1. http://localhost:9000
  * 2. http://localhost:9000/?user=james
  * 3. http://localhost:9000/healthz
+ *
+ * Analyze profiling with pprof build-in tool:
+ * 1. analyze goroutine:   curl http://localhost:9000/debug/pprof/goroutine?debug=2
+ * 2. analyze heap memory: curl curl http://localhost:9000/debug/pprof/heap?debug=2
  */
 func main() {
 	flag.Set("v", "4")
@@ -30,6 +35,12 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", rootHandler)
 	mux.HandleFunc("/healthz", healthz)
+
+	// pprof handler
+	mux.HandleFunc("/debug/pprof", pprof.Index)
+	mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
+	mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
 
 	c, python, java := true, false, "no!"
 	fmt.Println(c, python, java)
@@ -64,4 +75,20 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
  */
 func healthz(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "ok\n")
+}
+
+/**
+ * Starts Http server with profiling routers
+ */
+func startHTTP(addr string, s *http.Server) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/debug/pprof", pprof.Index)
+	mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
+	mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
+	server := &http.Server{
+		Addr:    addr,
+		Handler: mux,
+	}
+	server.ListenAndServe()
 }
