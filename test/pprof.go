@@ -8,12 +8,12 @@ import (
 	"runtime/pprof"
 )
 
-var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+var cpuprofile = flag.String("cpuprofile", "/tmp/cpuprofile", "write cpu profile to file")
 
 /**
  * Analyze CPU Profile:
  * 1. generate report to a specific location, like /tmp/cpuprofile
- * 2. run command `go tool pprof /tmp/cpuprofile`
+ * 2. run command `go tool pprof /tmp/cpuprofile` [important]
  * 3. check top 10 threads by running `top 10`
  * 4. (pprof) list main.main - to display more info( optional )
  * 5. to generate a svg report
@@ -34,6 +34,12 @@ func main() {
 		}
 		pprof.StartCPUProfile(f)
 		defer pprof.StopCPUProfile()
+
+		var result int
+		for i := 0; i < 10000000; i++ {
+			result += i
+		}
+		log.Println("result:", result)
 	}
 	fmt.Println("===Performance Profiling Ends===")
 }
